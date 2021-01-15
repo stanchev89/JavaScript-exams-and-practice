@@ -1,153 +1,3 @@
-// const origin = [
-    // {
-    //   "simFileName": "CBMI",
-    //   "records": [
-    //     {
-    //       "recordNumber": 1,
-    //       "parameters": [
-    //         {
-    //           "name": "msg_id",
-    //           "value": "",
-    //           "initialValue": ""
-    //         }
-    //       ]
-    //     },
-    //     {
-    //       "recordNumber": 2,
-    //       "parameters": [
-    //         {
-    //           "name": "msg_id",
-    //           "value": "DDDD",
-    //           "initialValue": ""
-    //         }
-    //       ]
-    //     }
-    //   ]
-    // },
-    // {
-    //     "simFileName": "ACC",
-    //     "records": [
-    //       {
-    //         "recordNumber": 1,
-    //         "parameters": [
-    //           {
-    //             "name": "msg_id",
-    //             "value": "",
-    //             "initialValue": ""
-    //           }
-    //         ]
-    //       }
-    //     ]
-    // }
-//   ];
-
-//   const formData = [
-    // {
-    //   "simFileName": "CBMI",
-    //   "records": [
-    //     {
-    //       "recordNumber": 2,
-    //       "parameters": [
-    //         {
-    //           "name": "msg_id",
-    //           "value": "",
-    //           "initialValue": ""
-    //         }
-    //       ]
-    //     },
-    //     {
-    //       "recordNumber": 1,
-    //       "parameters": [
-    //         {
-    //           "name": "msg_id",
-    //           "value": "DDDD",
-    //           "initialValue": ""
-    //         }
-    //       ]
-    //     }
-    //     // {
-    //     //   "recordNumber": 3,
-    //     //   "parameters": [
-    //     //     {
-    //     //       "name": "msg_id",
-    //     //       "value": "DDDD",
-    //     //       "initialValue": ""
-    //     //     }
-    //     //   ]
-    //     // }
-    //   ]
-    // }
-//   ];
-
-
-//   function getRootAction(formDataChild,origin) {
-//     const formDataSimFileName = formDataChild.simFileName;
-//     origin.forEach(obj => {
-//         const currentSimFileName = obj.simFileName;
-
-//     })
-//     const exist = origin.find(obj => obj.simFileName === formDataSimFileName);
-//     return exist ? 'update' : 'insert';
-//   };
-
-//   function checkForDelete(formData,origin) {
-//     let toDelete = true;
-//     const output = [];
-//     for(let i = 0; i < origin.length; i++) {
-//         const currentOriginObj = origin[i];
-//         for(let x = 0; x < formData.length; x++) {
-//             const currentFormDatObj = formData[x];
-//             if(currentFormDatObj.simFileName === currentOriginObj.simFileName) {
-//                 toDelete = false;
-//             }
-//         }
-//         if(toDelete) {
-//             currentOriginObj.$action = 'delete';
-//             for (const record of currentOriginObj.records) {
-//                 record.$action = 'delete';
-//             }
-//             output.push(currentOriginObj);
-//         }
-//     }
-//     return output;
-//   }
-
-//   function toDeleteAndGetRecordNumbers(child,origin) {
-//     let toDelete = true;
-//     const recordNumbers = [];
-//     origin.forEach(obj => {
-//         const records = obj?.records;
-//         if(records) {
-//             for (const key of records) {
-//                  recordNumbers.push(key.recordNumber);
-//                  if(key.recordNumber === child.recordNumber) {
-//                      toDelete = false;
-//                 }
-//             }
-//         }
-        
-//     })
-//     return [toDelete,recordNumbers];
-//   };
-
-//   function getFormChildAction(formDataChild,origin) {
-//     const [toDelete,originRecordNumbers] = toDeleteAndGetRecordNumbers(formDataChild,origin);
-//     if(toDelete) {
-//         return 'delete';
-//     }
-//     return originRecordNumbers.includes(formDataChild.recordNumber)
-//         ?  'update'
-//         :  'insert'
-//     ;
-//   };
-
-//     const result = formData.forEach(child => {
-//       child.$action = getRootAction(child,origin);
-//       child.records.forEach(record => {
-//           record.$action = getFormChildAction(record,origin);
-//       })
-//     }).join(checkForDelete(formData,origin));
-
 
 function solve(formData,origin){
     const toDelete = checkToDelete(formData,origin);
@@ -160,12 +10,12 @@ function checkToDelete(formData,origin) {
     return origin.myData.reduce((acc,cur)=>{
     let toDelete = true;
     formDataMyData.forEach(obj => {
-      if(obj.simFileName === cur.simFileName){
+      if(obj.dataName === cur.dataName){
       toDelete = false;
       }
     });
     if(toDelete){
-    cur.$action = 'delete';
+    cur.$method = 'delete';
     acc.push(cur)
     }
     return acc
@@ -176,16 +26,16 @@ function insertOrUpdate(formData,origin){
  return formData.myData.reduce((acc,cur)=>{
       let toInsert = true;
     origin.myData.forEach(obj =>{
-        if(obj.simFileName === cur.simFileName){
-        cur.$action = 'update';
+        if(obj.dataName === cur.dataName){
+        cur.$method = 'update';
         cur.records = recordsActions(cur.records,obj.records);
         acc.push(cur)
         toInsert = false;
       }
     });
     if(toInsert) {
-      cur.$action = 'insert';
-        cur.records.forEach(obj => obj.$action = 'insert');
+      cur.$method = 'insert';
+        cur.records.forEach(obj => obj.$method = 'insert');
         acc.push(cur)
     }
    return acc
@@ -201,24 +51,24 @@ function recordsActions(formDataRecords,originRecords){
       toUpdate = true;
       const formIndex = formDataRecords.findIndex(x => x.recordNumber === obj.recordNumber);;
       if(index !== formIndex) {
-        cur.$action = 'delete';
+        cur.$method = 'delete';
         const copy = JSON.parse(JSON.stringify(cur));
         deletedRecords.push(copy);
       }else {
-        cur.$action = 'update';
+        cur.$method = 'update';
       }
       acc.push(cur)
       }
     });
      if(!toUpdate){
-     cur.$action = 'insert';
+     cur.$method = 'insert';
      acc.push(cur);
     }
   return acc;
   },[]);
   
   result.push(...deletedRecords.map(obj =>{ 
-    obj.$action = 'insert'
+    obj.$method = 'insert'
     return obj;
   }));
   return result.concat(recordsCheckToDelete(formDataRecords,originRecords));
@@ -234,7 +84,7 @@ function recordsCheckToDelete(formDataRecords,originRecords){
     }
   });
     if(!exist){
-     cur.$action = 'delete';
+     cur.$method = 'delete';
      acc.push(cur)
     }
    return acc;
@@ -244,15 +94,15 @@ function recordsCheckToDelete(formDataRecords,originRecords){
 const origin = {
   "myData": [
     {
-      "simFileName": "CBMI",
+      "dataName": "BTV",
       "records": [
         {
           "recordNumber": 1,
           "parameters": [
             {
-              "name": "msg_id",
+              "name": "news",
               "value": "",
-              "initialValue": ""
+              
             }
           ]
         },
@@ -260,24 +110,24 @@ const origin = {
           "recordNumber": 2,
           "parameters": [
             {
-              "name": "msg_id",
+              "name": "news",
               "value": "DDDD",
-              "initialValue": ""
+              
             }
           ]
         }
       ]
     },
     {
-        "simFileName": "ACC",
+        "dataName": "NOVA",
         "records": [
           {
             "recordNumber": 1,
             "parameters": [
               {
-                "name": "msg_id",
+                "name": "news",
                 "value": "",
-                "initialValue": ""
+                
               }
             ]
           }
@@ -290,15 +140,15 @@ const formData = {
 
   "myData": [
     {
-      "simFileName": "CBMI",
+      "dataName": "BTV",
       "records": [
         {
           "recordNumber": 2,
           "parameters": [
             {
-              "name": "msg_id",
+              "name": "news",
               "value": "",
-              "initialValue": ""
+              
             }
           ]
         },
@@ -306,39 +156,39 @@ const formData = {
           "recordNumber": 1,
           "parameters": [
             {
-              "name": "msg_id",
+              "name": "news",
               "value": "DDDD",
-              "initialValue": ""
+              
             }
           ]
         }
       ]
     },
     {
-        "simFileName": "ACC",
+        "dataName": "NOVA",
         "records": [
           {
             "recordNumber": 1,
             "parameters": [
               {
-                "name": "msg_id",
+                "name": "news",
                 "value": "",
-                "initialValue": ""
+                
               }
             ]
           }
         ]
     },
     {
-      "simFileName": "BBC",
+      "dataName": "BBC",
       "records": [
         {
           "recordNumber": 1,
           "parameters": [
             {
-              "name": "msg_id",
+              "name": "news",
               "value": "",
-              "initialValue": ""
+              
             }
           ]
         },
@@ -346,9 +196,9 @@ const formData = {
           "recordNumber": 2,
           "parameters": [
             {
-              "name": "msg_id",
+              "name": "news",
               "value": "",
-              "initialValue": ""
+              
             }
           ]
         },
@@ -356,9 +206,9 @@ const formData = {
           "recordNumber": 3,
           "parameters": [
             {
-              "name": "msg_id",
+              "name": "news",
               "value": "",
-              "initialValue": ""
+              
             }
           ]
         }
