@@ -67,7 +67,7 @@ function recordsActions(formDataRecords,originRecords){
   return acc;
   },[]);
   
-  result.push(...deletedRecords.map(obj =>{ 
+  result.push(...deletedRecords.reverse().map(obj =>{ 
     obj.$method = 'insert'
     return obj;
   }));
