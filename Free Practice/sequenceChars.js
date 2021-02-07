@@ -27,6 +27,24 @@ function solve2(string) {
     }
     return output
 }
+
+function solve3(string) {
+    const arr = string.split('');
+    let counter = 1;
+    const output = [];
+    for(let i = 0; i < arr.length; i++) {
+        if(arr[i] !== arr[i+1]) {
+            output.push(arr[i] + '-' + counter);
+            counter = 1;
+        }else {
+            counter++;
+        }
+    }
+    return output;
+}
+
+
+
 console.time('first');
 console.log(solve1('aaaabbbcccca'));
 console.timeEnd('first');
@@ -34,4 +52,8 @@ console.timeEnd('first');
 console.time('second');
 console.log(solve2('aaaabbbcccca'));
 console.timeEnd('second');
+
+console.time('third');
+console.log(solve3('aaaabbbcccca'));
+console.timeEnd('third');
 
