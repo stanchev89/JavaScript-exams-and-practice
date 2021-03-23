@@ -5,14 +5,11 @@ function solve(input) {
         const newCar = { name };
         newCar.print = function () {
             const output = [];
-
             for (const key in this) {
                 if (key !== 'name' && key !== 'print') {
                     output.push(`${key}:${this[key]}`)
                 }
-
             }
-
             return console.log(output.join(', '));;
         }
         return newCar;
@@ -30,13 +27,12 @@ function solve(input) {
 
     return (() => {
         const actions = {
-            create: (name, prop, parentName) => {
+            create: (name, _, parentName) => {
                 const parentCar = parentName ? findCar(parentName) : null;
                 const newCar = parentName
                     ? inheritCar(name, parentCar)
                     : createNewCar(name);
                 allCars.push(newCar);
-                return newCar;
             },
             set: (car, prop, value) => {
                 const currentCar = findCar(car);
